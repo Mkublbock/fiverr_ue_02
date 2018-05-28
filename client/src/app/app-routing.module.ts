@@ -3,7 +3,7 @@ import {RouterModule, Routes} from '@angular/router';
 
 import {LoginComponent, OverviewComponent, OptionsComponent} from './components';
 import {AuthGuard} from './guards';
-import {DeviceDetailsComponent} from "./components/detail/device-details.component";
+import {DeviceDetailsComponent} from './components/detail/device-details.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/overview', pathMatch: 'full'},

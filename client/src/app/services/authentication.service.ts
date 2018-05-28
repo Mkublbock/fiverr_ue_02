@@ -14,13 +14,22 @@ export class AuthenticationService {
     return this.sessionStorageService.loggedIn;
   }
 
-  login(username: string, password: string): Observable<void> {
+  login(username: string, password: string) {
     return this.restClient.authenticate({
       username: username, password: password
-    }).map(() => this.sessionStorageService.setLoggedIn(true));
+    }).map(data => {
+      const token = data.token;
+      console.log(token);
+      this.sessionStorageService.setToken(token);
+      this.sessionStorageService.setLoggedIn(true);
+    });
   }
 
   logout(): void {
     this.sessionStorageService.setLoggedIn(false);
+  }
+
+  getToken() {
+    return localStorage.getItem('token');
   }
 }

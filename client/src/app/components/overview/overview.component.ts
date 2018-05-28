@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 
-import {AvailableDevice} from 'app/models/device.available';
+import {AvailableDevice} from '../../models/device.available';
 import {DeviceService} from '../../services';
 
 @Component({
