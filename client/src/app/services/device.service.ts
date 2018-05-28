@@ -45,8 +45,6 @@ export class DeviceService {
     // event emmited when connected
     this.ws.onopen = function () {
       console.log('websocket is connected ...')
-      // sending a send event to websocket server
-      this.send('connected')
     }
     // event emmited when receiving message 
     this.ws.onmessage = function (ev) {
