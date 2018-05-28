@@ -1,4 +1,4 @@
-﻿import {Injectable} from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 
 @Injectable()
 export class SessionStorageService {
@@ -20,4 +20,9 @@ export class SessionStorageService {
       localStorage.removeItem('loggedIn');
     }
   }
+
+  setToken(token) {
+    localStorage.setItem('token', JSON.stringify(token));
+  }
+
 }
