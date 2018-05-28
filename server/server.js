@@ -221,7 +221,7 @@
             console.log("client gschickt");
         })
         // ws.send("asdfasdf");
-        wss.
+        
     }
 
     /**
