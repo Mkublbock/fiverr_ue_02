@@ -18,6 +18,7 @@ export class DeviceService {
   private readonly arrows: Subject<Arrow[]>;
   private readonly logUpdates: Subject<LogUpdate<any>>;
   private ws: WebSocket;
+  public skip = false;
 
   constructor(private readonly deviceClient: DeviceClient) {
     this.devices = new ReplaySubject();
@@ -47,10 +48,20 @@ export class DeviceService {
       console.log('websocket is connected ...')
     }
     // event emmited when receiving message 
+    let self = this;
     this.ws.onmessage = function (ev) {
-      console.log(ev);
+      if(JSON.parse(ev.data).type === "update"){
+        self.skip = true
+        const device = self.getDevice(JSON.parse(ev.data).index);
+        console.log(device + " " + JSON.parse(ev.data).index + " " + ev.data.index)
+        let help;
+        device.subscribe(el => help = el);
+        
+        self.updateDevice(help, JSON.parse(ev.data).value);
+      }
     }
   }
+
 
   getAvailable(): Observable<AvailableDevice[]> {
     if (!this.available) {
@@ -109,13 +120,18 @@ export class DeviceService {
 
   updateDevice<T>(device: Device<Control<T>>, value: T): void {
     // TODO Send updated values to server via WebSocket
-    const msg = {
-      type: "message",
-      value: value,
-      index:   device.index
-    };
-    this.ws.send(JSON.stringify(msg));
+    if(!this.skip){
+      console.log("skip is richtig");
+      const msg = {
+        type: "update",
+        value: value,
+        index:   device.index
+      };
+      this.ws.send(JSON.stringify(msg));
+    }
+    console.log(device);
     this.setDeviceValue(device, value);
+    this.skip = false;
   }
 
   private setDeviceValue<T>(device: Device<Control<T>>, value: T): void {

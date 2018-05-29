@@ -39,18 +39,23 @@
     app.delete("/devices/:predecessor/successors/:successor", deleteSuccessor);
 
     // TODO Create a WebSocket that clients can connect to
-    const expressWs = require('express-ws')(app);
-    
-        const WebSocketServer = require('ws').Server,
-            wss = new WebSocketServer({ port: 40510 });
-    
-        wss.on('connection', function (ws) {
-            ws.on('message', function (message) {
-                console.log('received: %s', message)
-            })
-            ws.send("hello Client, i am the server")
+    const WebSocketServer = require('ws').Server,
+        wss = new WebSocketServer({ port: 40510 });
+
+    wss.on('connection', function (ws) {
+        ws.on('message', function (message) {
+            const jsn = JSON.parse(message);
+            sendUpdatedValue(jsn.index, jsn.value);
+            wss.clients.forEach(function each(client) {
+                if (client !== ws) {
+                    client.send(message);
+                }
+            });
         })
-    
+        
+        //ws.send("hello Client, i am the server")
+    })
+
     // TODO Check validity of JWT tokens on requests
 
     /**
@@ -359,7 +364,10 @@
      * @param value The new value for the device
      */
     function sendUpdatedValue(index, value) {
+
+        devices[index].control = value
         // TODO Send the data to connected WebSocket clients
+        
     }
 
     /**
