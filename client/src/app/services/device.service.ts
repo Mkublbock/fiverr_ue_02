@@ -47,16 +47,15 @@ export class DeviceService {
     this.ws.onopen = function () {
       console.log('websocket is connected ...')
     }
-    // event emmited when receiving message 
+    // event emmited when receiving message
     let self = this;
     this.ws.onmessage = function (ev) {
       if(JSON.parse(ev.data).type === "update"){
         self.skip = true
         const device = self.getDevice(JSON.parse(ev.data).index);
-        console.log(device + " " + JSON.parse(ev.data).index + " " + ev.data.index)
         let help;
         device.subscribe(el => help = el);
-        
+
         self.updateDevice(help, JSON.parse(ev.data).value);
       }
     }
@@ -121,7 +120,6 @@ export class DeviceService {
   updateDevice<T>(device: Device<Control<T>>, value: T): void {
     // TODO Send updated values to server via WebSocket
     if(!this.skip){
-      console.log("skip is richtig");
       const msg = {
         type: "update",
         value: value,
@@ -129,7 +127,6 @@ export class DeviceService {
       };
       this.ws.send(JSON.stringify(msg));
     }
-    console.log(device);
     this.setDeviceValue(device, value);
     this.skip = false;
   }
