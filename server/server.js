@@ -10,6 +10,15 @@
     const express = require("express");
     const app = express();
     const fs = require("fs");
+    const https = require('https');
+    const privateKey = fs.readFileSync('../https/ia.key', 'utf8');
+    const certificate = fs.readFileSync('../https/ia.crt', 'utf8');
+    const credentials = {
+        key: privateKey,
+        cert: certificate
+    };
+
+    const httpsServer = https.createServer(credentials, app);
 
     const bodyParser = require("body-parser");
     const jwt = require("jsonwebtoken");
@@ -40,7 +49,9 @@
 
     // TODO Create a WebSocket that clients can connect to
     const WebSocketServer = require('ws').Server,
-        wss = new WebSocketServer({ port: 40510 });
+        wss = new WebSocketServer({
+            port: 40510
+        });
 
     wss.on('connection', function (ws) {
         ws.on('message', function (message) {
@@ -52,7 +63,7 @@
                 }
             });
         })
-        
+
         //ws.send("hello Client, i am the server")
     })
 
@@ -367,7 +378,7 @@
 
         devices[index].control = value
         // TODO Send the data to connected WebSocket clients
-        
+
     }
 
     /**
@@ -404,13 +415,13 @@
         });
     }
 
-    const server = app.listen(8081, function () {
+    httpsServer.listen(8081, function () {
         readUser();
         readAvailable();
         simulation.simulateSmartProduction(devices, sendUpdatedValue);
 
-        const host = server.address().address;
-        const port = server.address().port;
+        const host = httpsServer.address().address;
+        const port = httpsServer.address().port;
         console.log("Big Smart Production Server listening at http://%s:%s", host, port);
     });
 })();
