@@ -10,6 +10,7 @@
     const express = require("express");
     const app = express();
     const fs = require("fs");
+
     const https = require('https');
     const privateKey = fs.readFileSync('../https/ia.key', 'utf8');
     const certificate = fs.readFileSync('../https/ia.crt', 'utf8');
@@ -19,6 +20,7 @@
     };
 
     const httpsServer = https.createServer(credentials, app);
+
 
     const bodyParser = require("body-parser");
     const jwt = require("jsonwebtoken");
@@ -415,13 +417,22 @@
         });
     }
 
-    httpsServer.listen(8081, function () {
+    const server = app.listen(8081, function () {
+        readUser();
+        readAvailable();
+        simulation.simulateSmartProduction(devices, sendUpdatedValue);
+        const host = server.address().address;
+        const port = server.address().port;
+        console.log("Big Smart Production Server listening at http://%s:%s", host, port);
+    });
+
+    httpsServer.listen(8084, function () {
         readUser();
         readAvailable();
         simulation.simulateSmartProduction(devices, sendUpdatedValue);
 
         const host = httpsServer.address().address;
         const port = httpsServer.address().port;
-        console.log("Big Smart Production Server listening at http://%s:%s", host, port);
+        console.log("Big Smart Production Server listening at https://%s:%s", host, port);
     });
 })();
